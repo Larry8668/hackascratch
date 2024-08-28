@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { HiOutlineMenu, HiX } from "react-icons/hi"; // Importing icons for hamburger and close button
+import { HiOutlineMenu, HiX } from "react-icons/hi";
 import tams from "../assets/tams-logo.png";
 
 const NavBar = () => {
+  const { currentUser } = useAuth();
   const [logoVisible, setLogoVisible] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // State for controlling the mobile menu
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,7 +26,6 @@ const NavBar = () => {
     };
   }, []);
 
-  // Toggle the menu open/close state
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -35,12 +36,10 @@ const NavBar = () => {
         scrolled ? "backdrop-blur-lg" : ""
       }`}
     >
-      {/* Logo */}
       <Link to="/">
         <img src={tams} alt="tams-logo" className="w-[100px] md:w-[150px]" />
       </Link>
 
-      {/* Desktop Links */}
       <div className="hidden md:flex gap-10 px-5">
         <Link to="/" className="font-semibold text-xl">
           Home
@@ -51,9 +50,19 @@ const NavBar = () => {
         <Link to="/about" className="font-semibold text-xl">
           About
         </Link>
+        {!currentUser ? (
+          <Link to="/login" className="font-semibold text-xl">
+            Login
+          </Link>
+        ) : (
+          <Link to="/dashboard" className="font-semibold text-xl underline">
+            {currentUser.name.length > 8
+              ? currentUser.name.slice(0, 5) + "..."
+              : currentUser.name}
+          </Link>
+        )}
       </div>
 
-      {/* Hamburger Icon for Mobile */}
       <button
         className="md:hidden text-3xl p-2 focus:outline-none"
         onClick={toggleMenu}
@@ -93,6 +102,26 @@ const NavBar = () => {
           >
             About
           </Link>
+          <div className="w-[85%] h-[1px] bg-slate-400" />
+
+          {!currentUser ? (
+            <Link
+              to="/login"
+              className="w-full text-center py-2 font-semibold text-lg"
+              onClick={toggleMenu}
+            >
+              Login
+            </Link>
+          ) : (
+            <Link
+              to="/dashboard"
+              className="w-full text-center py-2 font-semibold text-lg underline"
+            >
+              {currentUser.name.length > 8
+                ? currentUser.name.slice(0, 5) + "..."
+                : currentUser.name}
+            </Link>
+          )}
         </motion.div>
       )}
     </div>
