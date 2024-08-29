@@ -60,7 +60,7 @@ const Explore = () => {
     if (settings.isVotingActive) {
       return (
         <button
-          className="p-3 flex items-center gap-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
+          className="text-sm md:text-base p-3 flex items-center gap-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
           onClick={() => navigate("/voting")}
         >
           Vote Now
@@ -69,7 +69,7 @@ const Explore = () => {
     } else if (settings.isResultsActive) {
       return (
         <button
-          className="p-3 flex items-center gap-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600"
+          className="text-sm md:text-base p-3 flex items-center gap-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600"
           onClick={() => navigate("/results")}
         >
           View Results
@@ -99,7 +99,7 @@ const Explore = () => {
       </div>
       <div className="w-[90%] h-[1px] bg-slate-500" />
       <div className="w-[90%] h-[1px] bg-slate-500 mb-5" />
-      <div className="w-full flex justify-between items-center px-5 gap-4">
+      <div className="w-full flex justify-between items-center px-5 md:px-16 gap-4">
         <div className="flex md:items-center justify-start gap-4 md:w-1/2">
           <label
             htmlFor="sort"
@@ -122,9 +122,9 @@ const Explore = () => {
           </select>
         </div>
 
-        <div className="flex gap-2 md:ml-auto">
+        <div className="flex gap-4 md:ml-auto">
           <button
-            className="p-3 flex items-center gap-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+            className="text-sm md:text-base p-3 flex items-center gap-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
             onClick={() => navigate("/upload")}
           >
             Upload Game <FaPlus />

@@ -5,6 +5,7 @@ import { addGame } from "./db/FirebaseService";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
+import { FaInfo } from "react-icons/fa6";
 
 const UploadGame = () => {
   const { currentUser } = useAuth();
@@ -50,12 +51,7 @@ const UploadGame = () => {
     setError("");
     setSuccess("");
 
-    if (
-      !gameName ||
-      !gameDesc ||
-      !scratchUrl ||
-      contributors.length === 0
-    ) {
+    if (!gameName || !gameDesc || !scratchUrl || contributors.length === 0) {
       toast.error(
         "All fields are required, and at least one contributor is needed."
       );
@@ -120,9 +116,69 @@ const UploadGame = () => {
     window.location.href = "/login";
   }
 
+  const handleInfoClick = () => {
+    toast.custom((t) => (
+      <div
+        className={`${
+          t.visible ? 'animate-enter' : 'animate-leave'
+        } max-w-lg w-full bg-white shadow-lg rounded-lg pointer-events-auto flex flex-col p-4 ring-1 ring-black ring-opacity-5`}
+      >
+        <div className="flex justify-between items-start">
+          <h2 className="text-lg font-semibold text-gray-900">
+            How to Publish Your Scratch Project
+          </h2>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+            aria-label="Close"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <p className="mt-2 text-sm text-gray-700">
+          To publish your Scratch project and get a shareable link, follow these steps:
+        </p>
+        <ol className="list-decimal list-inside mt-2 text-sm text-gray-600">
+          <li>Open your Scratch project in the Scratch editor.</li>
+          <li>Click on the 'File' menu in the top left corner.</li>
+          <li>Select 'Save now' to ensure your project is saved.</li>
+          <li>Click on the 'Share' button located near the top of the editor.</li>
+          <li>Once your project is shared, a link will be generated.</li>
+          <li>Use that link to get the project ID and paste it here.</li>
+        </ol>
+        <p className="mt-2 text-sm text-gray-600">Good Luck!</p>
+      </div>
+    ), {
+      duration: 10000, 
+    });
+    
+    
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white border border-slate-200 rounded-lg shadow-md mt-20">
-      <h2 className="text-2xl font-semibold mb-4">Upload Your Game</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold mb-4">Upload Your Game</h2>
+        <div
+          className="p-2 border border-slate-400 rounded-md cursor-pointer"
+          onClick={handleInfoClick}
+        >
+          <FaInfo />
+        </div>
+      </div>
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {success && <div className="text-green-500 mb-4">{success}</div>}

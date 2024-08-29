@@ -88,41 +88,59 @@ const GamePage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="text-xl font-semibold text-gray-700">Loading...</div>
       </div>
     );
   }
 
   if (!game) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Game not found.
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="text-xl font-semibold text-gray-700">
+          Game not found.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-5 space-y-5 mt-20">
-      <h1 className="text-3xl font-bold mb-2">{game.gameName}</h1>
-      <p className="text-lg text-gray-700 mb-4">{game.gameDesc}</p>
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg my-20 space-y-6">
+      <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+        {game.gameName}
+      </h1>
+      <p className="text-lg text-gray-600 mb-4">{game.gameDesc}</p>
       <img
         src={game.gamePreview}
         alt={game.gameName}
-        className="w-full h-[300px] object-cover rounded-md mb-4"
+        className="w-full h-[300px] object-cover rounded-lg shadow-md mb-4"
       />
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
         <div className="text-gray-700">
-          <p>Contributors: {game.gameContributors.join(", ")}</p>
-          <p>Team: {game.teamName}</p>
-          <p>Likes: {game.likes.length}</p>
-          <p>Submitted on: {formatTimestamp(game.timestamp)}</p>
+          <p className="text-base">
+            Contributors:{" "}
+            <span className="font-bold">
+              {game.gameContributors.join(" , ")}
+            </span>
+          </p>
+          <p className="text-base">
+            Team: <span className="font-medium">{game.teamName}</span>
+          </p>
+          <p className="text-base">
+            Likes: <span className="font-medium">{game.likes.length}</span>
+          </p>
+          <p className="text-base">
+            Submitted on:{" "}
+            <span className="font-medium">
+              {formatTimestamp(game.timestamp)}
+            </span>
+          </p>
         </div>
         <button
-          className="flex items-center space-x-2 text-red-500"
+          className="flex items-center space-x-2 text-red-600 hover:text-red-700 transition"
           onClick={handleLike}
         >
-          <FaHeart />
+          <FaHeart size={24} />
           <span>{game.likes.length}</span>
         </button>
       </div>
@@ -130,50 +148,50 @@ const GamePage = () => {
       <iframe
         src={`${game.scratchUrl}/embed`}
         title={game.gameName}
-        className="w-full h-[500px] border-2 border-gray-300 rounded-md"
+        className="w-full h-[300px] md:h-[500px] border-0 rounded-lg shadow-md"
         allowFullScreen
       ></iframe>
 
-      <div className="mt-5">
-        <h2 className="text-2xl font-semibold mb-3">
+      <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-4">
           Comments {`(${game.comments.length})`}
         </h2>
-        <div className="my-4 flex items-center space-x-3">
+        <div className="flex items-center space-x-3 mb-4">
           <input
             type="text"
             placeholder="Add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="flex-1 p-2 border border-gray-300 rounded-md"
+            className="flex-1 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={handleAddComment}
-            className="p-2 bg-blue-500 text-white rounded-md"
+            className="p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
           >
             Comment
           </button>
         </div>
-        <div className="space-y-3 p-4 border-2 border-gray-300 rounded-xl">
+        <div className="space-y-4">
           {game.comments.map((comment, index) => (
             <div
               key={index}
-              className="p-3 shadow-lg border border-gray-200 rounded-md"
+              className="p-4 bg-white shadow-md border border-gray-200 rounded-lg"
             >
-              <div className="w-full flex justify-between items-center">
-                <p className="font-semibold flex gap-2 items-center">
-                  <MdAccountCircle size={28} />
+              <div className="flex justify-between items-center mb-2">
+                <p className="font-semibold flex gap-2 items-center text-gray-900">
+                  <MdAccountCircle size={30} />
                   {comment.user}
-                  {comment.role && comment.role != "team" && (
-                    <div className="p-1 bg-yellow-300 rounded-md text-xs">
+                  {comment.role && comment.role !== "team" && (
+                    <span className="p-1 bg-yellow-200 rounded-md text-xs text-yellow-800">
                       {comment.role.toUpperCase()}
-                    </div>
+                    </span>
                   )}
                 </p>
                 <p className="text-sm text-gray-500">
                   {formatTimestamp(comment.timestamp)}
                 </p>
               </div>
-              <p className="px-5 text-sm">{comment.content}</p>
+              <p className="text-sm text-gray-700">{comment.content}</p>
             </div>
           ))}
         </div>
