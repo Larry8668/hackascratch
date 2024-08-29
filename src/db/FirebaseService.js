@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { db } from "./FirebaseInit";
 import {
   collection,
@@ -13,8 +14,6 @@ import {
 
 // References to collections
 const gamesCollection = collection(db, "games");
-const teamsCollection = collection(db, "teams");
-const usersCollection = collection(db, "users");
 
 // Add a new game
 export const addGame = async (gameData) => {
@@ -25,6 +24,7 @@ export const addGame = async (gameData) => {
       likes: [], // Initialize likes as an empty array
       comments: [], // Initialize comments as an empty array
     });
+    toast.success("Game added successfully!");
     console.log("Game added successfully");
   } catch (error) {
     console.error("Error adding game: ", error);
@@ -35,7 +35,10 @@ export const addGame = async (gameData) => {
 export const fetchGames = async () => {
   try {
     const querySnapshot = await getDocs(gamesCollection);
-    const games = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const games = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     return games;
   } catch (error) {
     console.error("Error fetching games: ", error);
@@ -49,6 +52,7 @@ export const likeGame = async (gameId, user) => {
     await updateDoc(gameRef, {
       likes: arrayUnion(user),
     });
+    toast.success("Game liked!");
     console.log("Game liked!");
   } catch (error) {
     console.error("Error liking game: ", error);
@@ -62,50 +66,9 @@ export const addCommentToGame = async (gameId, comment) => {
     await updateDoc(gameRef, {
       comments: arrayUnion(comment),
     });
+    toast.success("Comment added!");
     console.log("Comment added!");
   } catch (error) {
     console.error("Error adding comment: ", error);
-  }
-};
-
-// Add a new team
-export const addTeam = async (teamData) => {
-  try {
-    await addDoc(teamsCollection, teamData);
-    console.log("Team added successfully");
-  } catch (error) {
-    console.error("Error adding team: ", error);
-  }
-};
-
-// Fetch all teams
-export const fetchTeams = async () => {
-  try {
-    const querySnapshot = await getDocs(teamsCollection);
-    const teams = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    return teams;
-  } catch (error) {
-    console.error("Error fetching teams: ", error);
-  }
-};
-
-// Add a new user
-export const addUser = async (userData) => {
-  try {
-    await addDoc(usersCollection, userData);
-    console.log("User added successfully");
-  } catch (error) {
-    console.error("Error adding user: ", error);
-  }
-};
-
-// Fetch all users
-export const fetchUsers = async () => {
-  try {
-    const querySnapshot = await getDocs(usersCollection);
-    const users = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    return users;
-  } catch (error) {
-    console.error("Error fetching users: ", error);
   }
 };
