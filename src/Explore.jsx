@@ -72,7 +72,9 @@ const Explore = () => {
             onChange={handleSortChange}
             className="border border-gray-300 p-2 rounded-md w-full md:w-auto"
           >
-            <option value="" disabled>Select</option>
+            <option value="" disabled>
+              Select
+            </option>
             <option value="Newest">Newest</option>
             <option value="Oldest">Oldest</option>
             <option value="Most Likes">Most Likes</option>
@@ -86,11 +88,17 @@ const Explore = () => {
           Upload Game <FaPlus />
         </button>
       </div>
-      <div className="w-full flex flex-wrap justify-center md:justify-start">
-        {games.map((game) => (
-          <GameCard props={game} />
-        ))}
-      </div>
+      {games.length > 0 ? (
+        <div className="w-full flex flex-wrap justify-center md:justify-start">
+          {games.map((game) => (
+            <GameCard props={game} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-sm font-semibold text-gray-500 mt-10">
+          Get started by uploading your first game!
+        </div>
+      )}
     </div>
   );
 };
