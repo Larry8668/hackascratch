@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import About from "./About.jsx";
 import Explore from "./Explore.jsx";
 import GamePage from "./GamePage.jsx";
+import UploadGame from "./UploadGame.jsx";
 import Login from "./Login.jsx";
 import Dashboard from "./Dashboard.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/about" element={<About />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/explore/:gameId" element={<GamePage />} />
+          <Route path="/upload" element={<UploadGame />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>

@@ -216,7 +216,7 @@ const Dashboard = () => {
                     required
                     className="w-full px-4 py-2 border rounded-md"
                   />
-                  <div className="w-full flex">
+                  <div className="w-full flex gap-2">
                     <input
                       type={showMemberPassword ? "text" : "password"}
                       placeholder="Password"
@@ -287,7 +287,7 @@ const Dashboard = () => {
                     required
                     className="w-full px-4 py-2 border rounded-md"
                   />
-                  <div className="w-full flex">
+                  <div className="w-full flex gap-2">
                     <input
                       type={showTeamPassword ? "text" : "password"}
                       placeholder="Password"

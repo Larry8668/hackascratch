@@ -6,6 +6,7 @@ import { likeGame, addCommentToGame } from "./db/FirebaseService";
 import { doc, getDoc } from "firebase/firestore";
 import { MdAccountCircle } from "react-icons/md";
 import { useAuth } from "./context/AuthContext";
+import toast from "react-hot-toast";
 
 const GamePage = () => {
   const { currentUser } = useAuth();
@@ -36,6 +37,10 @@ const GamePage = () => {
   }, [gameId]);
 
   const handleLike = async () => {
+    if (!currentUser) {
+      toast.error("Please login to like!");
+      return;
+    }
     if (!game) return;
     try {
       await likeGame(game.id, currentUser.name);
@@ -49,6 +54,10 @@ const GamePage = () => {
   };
 
   const handleAddComment = async () => {
+    if (!currentUser) {
+      toast.error("Please login to comment!");
+      return;
+    }
     if (!newComment.trim()) return;
     try {
       const comment = {
@@ -94,7 +103,7 @@ const GamePage = () => {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-5 space-y-5">
+    <div className="w-full max-w-4xl mx-auto p-5 space-y-5 mt-20">
       <h1 className="text-3xl font-bold mb-2">{game.gameName}</h1>
       <p className="text-lg text-gray-700 mb-4">{game.gameDesc}</p>
       <img
