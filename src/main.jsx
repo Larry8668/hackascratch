@@ -9,6 +9,8 @@ import Explore from "./Explore.jsx";
 import GamePage from "./GamePage.jsx";
 import UploadGame from "./UploadGame.jsx";
 import Login from "./Login.jsx";
+import Voting from "./Voting.jsx";
+import Results from "./Results.jsx";
 import Dashboard from "./Dashboard.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { Toaster } from "react-hot-toast";
@@ -26,6 +28,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="/upload" element={<UploadGame />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/voting" element={<Voting />} />
+          <Route path="/results" element={<Results />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="bottom-center" reverseOrder={false} />

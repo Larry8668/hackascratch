@@ -5,6 +5,8 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  setDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../db/FirebaseInit";
 import toast from "react-hot-toast";
@@ -12,8 +14,11 @@ import { FaPlus, FaMinus } from "react-icons/fa6";
 
 const VotingScreen = ({ role }) => {
   const [games, setGames] = useState([]);
-  const [selectedGames, setSelectedGames] = useState([]);
   const [votingGames, setVotingGames] = useState([]);
+  const [settings, setSettings] = useState({
+    isVotingActive: false,
+    isResultsActive: false,
+  });
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -42,21 +47,38 @@ const VotingScreen = ({ role }) => {
       }
     };
 
+    const fetchSettings = async () => {
+      try {
+        const settingsDoc = await getDoc(doc(db, "settings", "votingStatus"));
+        if (settingsDoc.exists()) {
+          setSettings(settingsDoc.data());
+        }
+      } catch (error) {
+        console.error("Error fetching settings:", error);
+      }
+    };
+
     fetchGames();
     fetchVotingGames();
+    fetchSettings();
   }, []);
 
   const handleSelectGame = async (game) => {
     try {
       const newDocRef = await addDoc(collection(db, "voting"), {
+        gameId: game.id,
         gameName: game.gameName,
         teamName: game.teamName,
         votes: [],
       });
-      // Optimistically update the voting games list
       setVotingGames((prev) => [
         ...prev,
-        { id: newDocRef.id, gameName: game.gameName, teamName: game.teamName },
+        {
+          id: newDocRef.id,
+          gameId: game.id,
+          gameName: game.gameName,
+          teamName: game.teamName,
+        },
       ]);
       toast.success(`${game.gameName} added to voting list!`);
     } catch (error) {
@@ -68,7 +90,6 @@ const VotingScreen = ({ role }) => {
   const handleDeleteGame = async (votingGame) => {
     try {
       await deleteDoc(doc(db, "voting", votingGame.id));
-      // Remove game from the voting list locally
       setVotingGames((prev) =>
         prev.filter((game) => game.id !== votingGame.id)
       );
@@ -76,6 +97,40 @@ const VotingScreen = ({ role }) => {
     } catch (error) {
       console.error("Error deleting voting game:", error);
       toast.error("Failed to delete voting game");
+    }
+  };
+
+  const handleInitiateVoting = async () => {
+    try {
+      const updatedSettings = {
+        ...settings,
+        isResultsActive: false,
+        isVotingActive: true,
+      };
+      await setDoc(doc(db, "settings", "votingStatus"), updatedSettings);
+      setSettings(updatedSettings);
+      toast.success("Voting initiated successfully!");
+    } catch (error) {
+      console.error("Error initiating voting:", error);
+      toast.error("Failed to initiate voting");
+    }
+  };
+
+  const handleReleaseResults = async () => {
+    try {
+      const updatedSettings = {
+        ...settings,
+        isResultsActive: true,
+        isVotingActive: false,
+      };
+
+      await setDoc(doc(db, "settings", "votingStatus"), updatedSettings);
+      setSettings(updatedSettings);
+
+      toast.success("Results released successfully, and voting is now closed!");
+    } catch (error) {
+      console.error("Error releasing results:", error);
+      toast.error("Failed to release results");
     }
   };
 
@@ -117,6 +172,30 @@ const VotingScreen = ({ role }) => {
               );
             })}
           </ul>
+          <div className="flex space-x-4 mt-4">
+            <button
+              onClick={handleInitiateVoting}
+              className={`${
+                settings.isVotingActive
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-green-500"
+              } text-white py-2 px-4 rounded-md`}
+              disabled={settings.isVotingActive}
+            >
+              Initiate Voting
+            </button>
+            <button
+              onClick={handleReleaseResults}
+              className={`${
+                settings.isResultsActive
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-yellow-500"
+              } text-white py-2 px-4 rounded-md`}
+              disabled={settings.isResultsActive}
+            >
+              Release Results
+            </button>
+          </div>
         </>
       )}
 
@@ -133,7 +212,7 @@ const VotingScreen = ({ role }) => {
               <div>
                 {votingGame.gameName} - {votingGame.teamName}
               </div>
-              {role && role == "admin" && (
+              {role && role === "admin" && (
                 <button
                   onClick={() => handleDeleteGame(votingGame)}
                   className="bg-red-500 text-white px-4 py-2 rounded-md"

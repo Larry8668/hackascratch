@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchGames } from "./db/FirebaseService";
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
+import { db } from "./db/FirebaseInit"; // Adjust the path based on your file structure
 import GameCard from "./components/GameCard";
 import { FaPlus } from "react-icons/fa6";
 
@@ -9,6 +11,10 @@ const Explore = () => {
   const [games, setGames] = useState([]);
   const [submissionCount, setSubmissionCount] = useState(0);
   const [sortOption, setSortOption] = useState("");
+  const [settings, setSettings] = useState({
+    isVotingActive: false,
+    isResultsActive: false,
+  });
 
   useEffect(() => {
     const getGames = async () => {
@@ -17,7 +23,19 @@ const Explore = () => {
       setSubmissionCount(fetchedGames.length);
     };
 
+    const fetchSettings = async () => {
+      try {
+        const settingsDoc = await getDoc(doc(db, "settings", "votingStatus"));
+        if (settingsDoc.exists()) {
+          setSettings(settingsDoc.data());
+        }
+      } catch (error) {
+        console.error("Error fetching settings:", error);
+      }
+    };
+
     getGames();
+    fetchSettings(); // Fetch settings when the component mounts
   }, []);
 
   const handleSortChange = (e) => {
@@ -38,6 +56,29 @@ const Explore = () => {
     setGames(sortedGames);
   };
 
+  const getActionButton = () => {
+    if (settings.isVotingActive) {
+      return (
+        <button
+          className="p-3 flex items-center gap-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
+          onClick={() => navigate("/voting")}
+        >
+          Vote Now
+        </button>
+      );
+    } else if (settings.isResultsActive) {
+      return (
+        <button
+          className="p-3 flex items-center gap-2 bg-yellow-500 text-white rounded-md shadow-md hover:bg-yellow-600"
+          onClick={() => navigate("/results")}
+        >
+          View Results
+        </button>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="w-screen flex flex-col justify-center items-center text-black">
       <div className="w-full flex justify-between items-start md:items-center p-5 pt-20">
@@ -45,7 +86,7 @@ const Explore = () => {
           <h1 className="text-2xl md:text-4xl font-bold mb-2">
             Explore the various submissions
           </h1>
-          <p className="text-base    md:text-xl text-gray-600">
+          <p className="text-base md:text-xl text-gray-600">
             Discover amazing games created by our community!
           </p>
         </div>
@@ -81,17 +122,20 @@ const Explore = () => {
           </select>
         </div>
 
-        <button
-          className="p-3 flex items-center gap-2     bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 md:ml-auto md:w-auto"
-          onClick={() => navigate("/upload")}
-        >
-          Upload Game <FaPlus />
-        </button>
+        <div className="flex gap-2 md:ml-auto">
+          <button
+            className="p-3 flex items-center gap-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+            onClick={() => navigate("/upload")}
+          >
+            Upload Game <FaPlus />
+          </button>
+          {getActionButton()}
+        </div>
       </div>
       {games.length > 0 ? (
-        <div className="w-full flex flex-wrap justify-center md:justify-start">
+        <div className="w-full flex flex-wrap justify-center">
           {games.map((game) => (
-            <GameCard props={game} />
+            <GameCard key={game.id} props={game} />
           ))}
         </div>
       ) : (
