@@ -15,7 +15,7 @@ const GameCard = ({ props }) => {
       onClick={handleCardClick}
       className="m-4 p-5 border border-slate-400 rounded-lg shadow-lg w-72 cursor-pointer hover:shadow-xl transition-shadow duration-300 ease-in-out"
     >
-      <div className="w-full p-1 border-2 border-black rounded-lg overflow-hidden">
+      <div className="w-full p-1 border-2 border-slate-300 rounded-lg overflow-hidden">
         <img
           src={props.gamePreview}
           alt={props.gameName}

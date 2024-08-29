@@ -4,7 +4,7 @@ import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import App from "./App.jsx";
-import About from "./About.jsx";
+import Guide from "./Guide.jsx";
 import Explore from "./Explore.jsx";
 import GamePage from "./GamePage.jsx";
 import UploadGame from "./UploadGame.jsx";
@@ -20,7 +20,7 @@ createRoot(document.getElementById("root")).render(
         <NavBar />
         <Routes>
           <Route path="/" element={<App />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/guide" element={<Guide />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/explore/:gameId" element={<GamePage />} />
           <Route path="/upload" element={<UploadGame />} />

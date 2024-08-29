@@ -53,7 +53,6 @@ const UploadGame = () => {
     if (
       !gameName ||
       !gameDesc ||
-      !gameImage ||
       !scratchUrl ||
       contributors.length === 0
     ) {
@@ -69,17 +68,21 @@ const UploadGame = () => {
     setUploading(true);
 
     try {
-      // Generate a unique file name
-      const imageRef = ref(
-        storage,
-        `game_preview_images/${uuidv4()}-${gameImage.name}`
-      );
+      let imageUrl =
+        "https://firebasestorage.googleapis.com/v0/b/hackascratch.appspot.com/o/game_preview_images%2Fdefault-img.png?alt=media&token=ab240d7c-f2c1-434e-8936-9d70ad259dfe";
+      if (gameImage) {
+        // Generate a unique file name
+        const imageRef = ref(
+          storage,
+          `game_preview_images/${uuidv4()}-${gameImage.name}`
+        );
 
-      // Upload the image to Firebase Storage
-      await uploadBytes(imageRef, gameImage);
+        // Upload the image to Firebase Storage
+        await uploadBytes(imageRef, gameImage);
 
-      // Get the image URL
-      const imageUrl = await getDownloadURL(imageRef);
+        // Get the image URL
+        imageUrl = await getDownloadURL(imageRef);
+      }
 
       // Prepare the game data
       const gameData = {
@@ -156,12 +159,12 @@ const UploadGame = () => {
           <label className="block text-gray-700 font-semibold mb-2">
             Game Preview Image
           </label>
+          <small className="text-gray-500">Optional</small>
           <input
             type="file"
             onChange={handleImageChange}
             className="w-full p-2 border border-gray-300 rounded-md"
             accept="image/*"
-            required
           />
         </div>
 

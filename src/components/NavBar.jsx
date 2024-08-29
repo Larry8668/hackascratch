@@ -47,8 +47,8 @@ const NavBar = () => {
         <Link to="/explore" className="font-semibold text-xl">
           Explore
         </Link>
-        <Link to="/about" className="font-semibold text-xl">
-          About
+        <Link to="/guide" className="font-semibold text-xl">
+          Guide
         </Link>
         {!currentUser ? (
           <Link to="/login" className="font-semibold text-xl">
@@ -96,11 +96,11 @@ const NavBar = () => {
           </Link>
           <div className="w-[85%] h-[1px] bg-slate-400" />
           <Link
-            to="/about"
+            to="/guide"
             className="w-full text-center py-2 font-semibold text-lg"
             onClick={toggleMenu}
           >
-            About
+            Guide
           </Link>
           <div className="w-[85%] h-[1px] bg-slate-400" />
 
