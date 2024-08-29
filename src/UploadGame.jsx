@@ -194,6 +194,7 @@ const UploadGame = () => {
           </label>
           <input
             type="text"
+            disabled
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md"

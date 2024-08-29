@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
-import { db, auth } from "./db/FirebaseInit";
+import { db } from "./db/FirebaseInit";
 import MembersScreen from "./components/MembersScreen";
 import TeamsScreen from "./components/TeamsScreen";
-import toast from "react-hot-toast";
+import VotingScreen from "./components/VotingScreen";
 import { useAuth } from "./context/AuthContext";
 
 const Dashboard = () => {
@@ -37,7 +35,12 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="h-screen w-screen flex justify-center items-center font-semibold text-xl">
+        Loading...
+      </div>
+    );
 
   if (!currentUser) {
     window.location.href = "/login";
@@ -153,6 +156,7 @@ const Dashboard = () => {
             role={currentUser?.role}
           />
         )}
+        {activeTab === "votes" && <VotingScreen role={currentUser?.role} />}
       </main>
     </div>
   );

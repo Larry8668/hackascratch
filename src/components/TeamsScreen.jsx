@@ -30,6 +30,7 @@ const TeamsScreen = ({ teams, setTeams, logout, role }) => {
         members: newTeam.members.filter((member) => member !== ""),
         role: "team",
         uid: user.uid,
+        voted: false,
       });
 
       toast.success("Team added successfully!");
