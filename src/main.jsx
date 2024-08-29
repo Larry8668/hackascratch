@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import About from "./About.jsx";
 import Explore from "./Explore.jsx";
 import Login from "./Login.jsx";
+import Dashboard from "./Dashboard.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { Toaster } from "react-hot-toast";
 
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/about" element={<About />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="bottom-center" reverseOrder={false} />

@@ -9,6 +9,7 @@ const Login = () => {
   const { currentUser, login, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [accountType, setAccountType] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,7 +20,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await login(email, password, accountType);
       toast.success("Login successful!");
     } catch (err) {
       setError(err.message);
@@ -31,7 +32,7 @@ const Login = () => {
   useEffect(() => {
     setTimeout(() => {
       setError("");
-    }, 5000);
+    }, 2000);
   }, [error]);
 
   return (
@@ -82,6 +83,30 @@ const Login = () => {
               </div>
             </div>
           </div>
+          <div className="mb-6">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="accountType"
+            >
+              Account Type
+            </label>
+            <div className="w-full flex gap-2">
+              <select
+                id="accountType"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                onChange={(e) => setAccountType(e.target.value)}
+                required
+                value={accountType}
+              >
+                <option value="" disabled>
+                  Select Account Type
+                </option>
+                <option value="mentor">Mentor</option>
+                <option value="team">Team</option>
+              </select>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between">
             <button
               disabled={loading}

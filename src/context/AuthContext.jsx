@@ -1,6 +1,13 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { db, auth } from "../db/FirebaseInit";
-import { getDoc, doc } from "firebase/firestore";
+import {
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+  collection,
+} from "firebase/firestore";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -14,14 +21,23 @@ export const AuthProvider = ({ children }) => {
     const userData = localStorage.getItem("user");
     return userData ? JSON.parse(userData) : null;
   });
+  const [accountType, setAccountType] = useState(() => {
+    const accountTypeData = localStorage.getItem("accountType");
+    return accountTypeData ? JSON.parse(accountTypeData) : "users";
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
+        const userQuery = query(
+          collection(db, accountType),
+          where("uid", "==", user.uid)
+        );
+        const userSnapshot = await getDocs(userQuery);
+
+        if (!userSnapshot.empty) {
+          const userData = userSnapshot.docs[0].data();
           setCurrentUser(userData);
           localStorage.setItem("user", JSON.stringify(userData));
         } else {
@@ -32,6 +48,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setCurrentUser(null);
         localStorage.removeItem("user");
+        localStorage.removeItem("accountType");
       }
       setLoading(false);
     });
@@ -39,16 +56,41 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, accountType) => {
     try {
       setLoading(true);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      let searchCollection = "";
+      switch (accountType) {
+        case "mentor":
+          searchCollection = "users";
+          break;
+        case "team":
+          searchCollection = "teams";
+          break;
+        default:
+          throw new Error("Invalid account type");
+      }
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
+
+      // Create a query to find the document with uid matching user.uid
+      const userQuery = query(
+        collection(db, searchCollection),
+        where("uid", "==", user.uid)
+      );
+      const userSnapshot = await getDocs(userQuery);
+
+      if (!userSnapshot.empty) {
+        const userData = userSnapshot.docs[0].data(); // Get the first document's data
         setCurrentUser(userData);
+        setAccountType(searchCollection);
         localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("accountType", JSON.stringify(searchCollection));
       } else {
         console.error("No such user document!");
         throw new Error("No such user exists!");
@@ -66,6 +108,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       await signOut(auth);
       setCurrentUser(null);
+      setAccountType("users");
+      localStorage.removeItem("account");
       localStorage.removeItem("user");
     } catch (error) {
       console.error("Logout error:", error);
@@ -75,7 +119,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, loading }}>
+    <AuthContext.Provider value={{ currentUser, accountType, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
