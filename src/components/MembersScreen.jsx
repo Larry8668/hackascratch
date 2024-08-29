@@ -29,6 +29,7 @@ const MembersScreen = ({ members, setMembers, logout, role }) => {
         email: newMember.email,
         role: "mentor",
         uid: user.uid,
+        voted: true,
       });
 
       toast.success("Member added successfully!");

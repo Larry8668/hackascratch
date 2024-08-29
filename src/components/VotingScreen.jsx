@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  writeBatch,
   collection,
   getDocs,
   addDoc,
@@ -7,6 +8,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../db/FirebaseInit";
 import toast from "react-hot-toast";
@@ -134,6 +136,56 @@ const VotingScreen = ({ role }) => {
     }
   };
 
+  const handleRestartVoting = async () => {
+    try {
+      // Initialize a batch instance for resetting games' voted status
+      const gameBatch = writeBatch(db);
+
+      // Reset all games' voted status to false
+      const gamesSnapshot = await getDocs(collection(db, "games"));
+      gamesSnapshot.docs.forEach((gameDoc) => {
+        const gameRef = doc(db, "games", gameDoc.id);
+        gameBatch.update(gameRef, { voted: false });
+      });
+
+      // Commit the batch operation to update all games
+      await gameBatch.commit();
+
+      // Initialize a batch instance for updating teams' voted status
+      const teamBatch = writeBatch(db);
+
+      // Reset all teams' voted status to false
+      const teamsSnapshot = await getDocs(collection(db, "teams"));
+      teamsSnapshot.docs.forEach((teamDoc) => {
+        const teamRef = doc(db, "teams", teamDoc.id);
+        teamBatch.update(teamRef, { voted: false });
+      });
+
+      // Commit the batch operation to update all teams
+      await teamBatch.commit();
+
+      // Initialize a batch instance for deleting voting documents
+      const deleteBatch = writeBatch(db);
+
+      // Delete all games from the voting collection
+      const votingSnapshot = await getDocs(collection(db, "voting"));
+      votingSnapshot.docs.forEach((votingDoc) => {
+        const votingRef = doc(db, "voting", votingDoc.id);
+        deleteBatch.delete(votingRef);
+      });
+
+      // Commit the deletion batch
+      await deleteBatch.commit();
+
+      // Clear the state
+      setVotingGames([]);
+      toast.success("Voting has been restarted successfully!");
+    } catch (error) {
+      console.error("Error restarting voting:", error);
+      toast.error("Failed to restart voting");
+    }
+  };
+
   if (!role || role === "team") return null;
 
   return (
@@ -194,6 +246,12 @@ const VotingScreen = ({ role }) => {
               disabled={settings.isResultsActive}
             >
               Release Results
+            </button>
+            <button
+              onClick={handleRestartVoting}
+              className="bg-red-500 text-white py-2 px-4 rounded-md"
+            >
+              Restart Voting
             </button>
           </div>
         </>

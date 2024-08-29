@@ -6,6 +6,8 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "./db/FirebaseInit";
 import { useAuth } from "./context/AuthContext";
@@ -18,6 +20,7 @@ const Voting = () => {
   const [votingGames, setVotingGames] = useState([]);
   const [isVotingActive, setIsVotingActive] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasUserVoted, setHasUserVoted] = useState(false); // State to track if the user has voted
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -44,17 +47,35 @@ const Voting = () => {
       }
     };
 
+    const checkUserVoted = async () => {
+      if (!currentUser) return;
+
+      const userCollection = currentUser.role !== "team" ? "users" : "teams";
+      const q = query(
+        collection(db, userCollection),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        setHasUserVoted(userData.voted || false);
+      }
+    };
+
     const loadData = async () => {
       await fetchSettings();
       await fetchVotingGames();
+      await checkUserVoted();
       setIsLoading(false);
     };
 
     loadData();
-  }, []);
+  }, [currentUser]);
 
   const handleVote = async (game) => {
-    if (!currentUser || !currentUser.name) return;
+    if (!currentUser || !currentUser.name || hasUserVoted) return;
 
     try {
       const gameRef = doc(db, "voting", game.id);
@@ -62,8 +83,22 @@ const Voting = () => {
         votes: arrayUnion(currentUser.name),
       });
 
-      const userRef = doc(db, "users", currentUser.uid);
-      await updateDoc(userRef, { voted: true });
+      const userCollection = currentUser.role !== "team" ? "users" : "teams";
+
+      const q = query(
+        collection(db, userCollection),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        const userRef = doc(db, userCollection, userDoc.id);
+        await updateDoc(userRef, { voted: true });
+        setHasUserVoted(true); // Update state to reflect that the user has voted
+      } else {
+        console.error("No user found with the specified uid.");
+      }
 
       toast.success(`You have voted for ${game.gameName}!`);
     } catch (error) {
@@ -100,7 +135,6 @@ const Voting = () => {
       <ul className="bg-white rounded-md shadow-md p-4">
         {votingGames.map((game) => {
           const isUserTeamGame = currentUser.name === game.teamName;
-          const hasUserVoted = currentUser.voted;
 
           return (
             <li
