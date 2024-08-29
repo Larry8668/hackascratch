@@ -5,10 +5,15 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import toast from "react-hot-toast";
 
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
+
 const Dashboard = () => {
   const { currentUser, accountType, logout, loading } = useAuth();
   const [activeTab, setActiveTab] = useState("members");
   const [members, setMembers] = useState([]);
+  const [showMemberPassword, setShowMemberPassword] = useState(false);
+  const [showTeamPassword, setShowTeamPassword] = useState(false);
   const [teams, setTeams] = useState([]);
   const [newMember, setNewMember] = useState({
     name: "",
@@ -211,16 +216,24 @@ const Dashboard = () => {
                     required
                     className="w-full px-4 py-2 border rounded-md"
                   />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={newMember.password}
-                    onChange={(e) =>
-                      setNewMember({ ...newMember, password: e.target.value })
-                    }
-                    required
-                    className="w-full px-4 py-2 border rounded-md"
-                  />
+                  <div className="w-full flex">
+                    <input
+                      type={showMemberPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={newMember.password}
+                      onChange={(e) =>
+                        setNewMember({ ...newMember, password: e.target.value })
+                      }
+                      required
+                      className="w-full px-4 py-2 border rounded-md"
+                    />
+                    <div
+                      className="flex justify-center items-center p-2 border-2 border-slate-200 cursor-pointer rounded-md"
+                      onClick={() => setShowMemberPassword((curr) => !curr)}
+                    >
+                      {showMemberPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                    </div>
+                  </div>
                   <button
                     type="submit"
                     className="w-full bg-blue-500 text-white py-2 rounded-md"
@@ -274,16 +287,24 @@ const Dashboard = () => {
                     required
                     className="w-full px-4 py-2 border rounded-md"
                   />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={newTeam.password}
-                    onChange={(e) =>
-                      setNewTeam({ ...newTeam, password: e.target.value })
-                    }
-                    required
-                    className="w-full px-4 py-2 border rounded-md"
-                  />
+                  <div className="w-full flex">
+                    <input
+                      type={showTeamPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={newTeam.password}
+                      onChange={(e) =>
+                        setNewTeam({ ...newTeam, password: e.target.value })
+                      }
+                      required
+                      className="w-full px-4 py-2 border rounded-md"
+                    />
+                    <div
+                      className="flex justify-center items-center p-2 border-2 border-slate-200 cursor-pointer rounded-md"
+                      onClick={() => setShowTeamPassword((curr) => !curr)}
+                    >
+                      {showTeamPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                    </div>
+                  </div>
                   <div>
                     <input
                       type="text"
