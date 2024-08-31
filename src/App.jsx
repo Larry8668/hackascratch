@@ -33,9 +33,9 @@ function App() {
         className="w-[90%] md:w-[70%] border border-gray-300 bg-white rounded-lg shadow-lg overflow-hidden"
       >
         <div className="p-8 pb-16 md:pb-24 text-base md:text-lg font-medium text-gray-800">
-          <h2 className="text-xl md:text-2xl font-bold mb-4">Hackerscratch</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Hackascratch</h2>
           <p className="text-sm md:text-base leading-relaxed">
-            Hackerscratch helps high school students learn programming through a fun, interactive digital canvas. It promotes creativity, collaboration, and problem-solving, preparing students for future challenges and enabling them to express themselves in various fields.
+            Hackascratch helps high school students learn programming through a fun, interactive digital canvas. It promotes creativity, collaboration, and problem-solving, preparing students for future challenges and enabling them to express themselves in various fields.
           </p>
         </div>
       </motion.div>
